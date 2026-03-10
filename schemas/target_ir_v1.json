@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://prompt2dag.dev/schemas/pipeline-codegen/target_ir/v1.json",
+  "title": "Target IR v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ir_version",
+    "target",
+    "target_version",
+    "pipeline_id",
+    "runtime_style",
+    "packaging",
+    "tasks",
+    "edges",
+    "entry_points",
+    "diagnostics"
+  ],
+  "properties": {
+    "ir_version": {"type": "string", "enum": ["1.0"]},
+    "target": {"type": "string"},
+    "target_version": {"type": "string"},
+    "pipeline_id": {"type": "string"},
+    "runtime_style": {"type": "string", "enum": ["imperative", "declarative"]},
+    "packaging": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy"],
+      "properties": {
+        "strategy": {"type": "string", "enum": ["single_workflow", "split_workflows"]}
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "execution_type", "operator", "category"],
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "category": {"type": "string"},
+          "execution_type": {"type": "string"},
+          "operator": {"type": "string"},
+          "script_language": {"type": "string"},
+          "integrations_used": {"type": "array", "items": {"type": "string"}},
+          "retry": {"type": "object", "additionalProperties": true}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "to", "edge_type"],
+        "properties": {
+          "from": {"type": "string"},
+          "to": {"type": "string"},
+          "edge_type": {"type": "string"}
+        }
+      }
+    },
+    "entry_points": {"type": "array", "items": {"type": "string"}},
+    "diagnostics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["warnings", "decisions"],
+      "properties": {
+        "warnings": {"type": "array", "items": {"type": "string"}},
+        "decisions": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

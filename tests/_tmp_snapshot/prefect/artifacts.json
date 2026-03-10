@@ -1,0 +1,13 @@
+{
+  "checksums": {
+    "flow.py": "2507113fcf36aef0372e0c55880d01c620ae0b7c068164b8f1e34f176ea1c4d4"
+  },
+  "entrypoint": "flow.py",
+  "files": [
+    "flow.py"
+  ],
+  "mode": "template",
+  "pipeline_id": "ok_sequential",
+  "target": "prefect",
+  "target_version": "3.x"
+}

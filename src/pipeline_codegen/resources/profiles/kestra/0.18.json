@@ -1,0 +1,16 @@
+{
+  "target": "kestra",
+  "version": "0.18",
+  "runtime_style": "declarative",
+  "output": {"type": "yaml", "entrypoint": "flow.yaml"},
+  "operator_mapping": {
+    "python_script": "io.kestra.plugin.scripts.python.Script",
+    "bash": "io.kestra.plugin.scripts.shell.Commands",
+    "container": "io.kestra.plugin.scripts.shell.Commands",
+    "http_request": "io.kestra.plugin.core.http.Request",
+    "sql": "io.kestra.plugin.jdbc.Query",
+    "email": "io.kestra.plugin.notifications.mail.MailSend"
+  },
+  "supported_execution_types": ["python_script", "bash", "container", "http_request", "sql", "email"],
+  "flags": {}
+}

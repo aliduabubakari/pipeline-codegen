@@ -1,0 +1,6 @@
+{
+  "target": "kubernetes",
+  "version": "1.0.stub",
+  "status": "deferred_v1_1",
+  "notes": "Interface stub only in v1"
+}

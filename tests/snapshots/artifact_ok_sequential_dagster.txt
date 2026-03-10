@@ -1,0 +1,16 @@
+from dagster import op, job
+
+@op
+def extract():
+    print("task extract")
+    return "extract"
+
+@op
+def load(upstream_0):
+    print("task load")
+    return "load"
+
+@job
+def ok_sequential():
+    extract_result = extract()
+    load_result = load(extract_result)

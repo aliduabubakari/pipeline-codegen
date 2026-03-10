@@ -1,0 +1,19 @@
+{
+  "target": "airflow",
+  "version": "2.8",
+  "runtime_style": "imperative",
+  "output": {"type": "python", "entrypoint": "pipeline.py"},
+  "operator_mapping": {
+    "python_script": "PythonOperator",
+    "bash": "BashOperator",
+    "container": "DockerOperator",
+    "http_request": "SimpleHttpOperator",
+    "sql": "SQLExecuteQueryOperator",
+    "email": "EmailOperator"
+  },
+  "supported_execution_types": ["python_script", "bash", "container", "http_request", "sql", "email"],
+  "flags": {
+    "container_operator": "docker",
+    "allow_kubernetes_pod_operator": true
+  }
+}

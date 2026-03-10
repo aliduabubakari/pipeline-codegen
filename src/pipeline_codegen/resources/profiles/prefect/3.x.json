@@ -1,0 +1,16 @@
+{
+  "target": "prefect",
+  "version": "3.x",
+  "runtime_style": "imperative",
+  "output": {"type": "python", "entrypoint": "flow.py"},
+  "operator_mapping": {
+    "python_script": "prefect_task",
+    "bash": "shell_task",
+    "container": "container_task",
+    "http_request": "http_task",
+    "sql": "sql_task",
+    "email": "email_task"
+  },
+  "supported_execution_types": ["python_script", "bash", "container", "http_request", "sql", "email"],
+  "flags": {}
+}

@@ -1,0 +1,16 @@
+{
+  "target": "dagster",
+  "version": "1.8",
+  "runtime_style": "imperative",
+  "output": {"type": "python", "entrypoint": "definitions.py"},
+  "operator_mapping": {
+    "python_script": "op",
+    "bash": "op_shell",
+    "container": "op_container",
+    "http_request": "op_http",
+    "sql": "op_sql",
+    "email": "op_email"
+  },
+  "supported_execution_types": ["python_script", "bash", "container", "http_request", "sql", "email"],
+  "flags": {}
+}

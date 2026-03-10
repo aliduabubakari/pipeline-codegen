@@ -1,0 +1,13 @@
+{
+  "checksums": {
+    "pipeline.py": "74f8a67921e36587fae9415c9b9d6a0529285f336f4a45ec0852ad0bebe8d984"
+  },
+  "entrypoint": "pipeline.py",
+  "files": [
+    "pipeline.py"
+  ],
+  "mode": "template",
+  "pipeline_id": "ok_sequential",
+  "target": "airflow",
+  "target_version": "2.8"
+}

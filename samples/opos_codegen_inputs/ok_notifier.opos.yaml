@@ -1,0 +1,65 @@
+components:
+- category: QualityCheck
+  executor:
+    type: python_script
+  id: quality
+  inputs: []
+  integrations_used:
+  - api
+  name: Quality
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+- category: Notifier
+  executor:
+    type: email
+  id: notify
+  inputs: []
+  integrations_used:
+  - smtp
+  name: Notify
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+description: Run check then notify
+flow:
+  edges:
+  - edge_type: success
+    from: quality
+    to: notify
+  entry_points:
+  - quality
+  pattern: sequential
+integrations:
+- authentication:
+    method: none
+  id: api
+  type: api
+  used_by_components: []
+- authentication:
+    method: none
+  id: smtp
+  type: smtp
+  used_by_components: []
+metadata:
+  complexity: low
+  created: '2026-01-03'
+  domain: general
+  generator: template
+  name: ok_notifier
+  owner: unknown
+opos_version: '1.0'
+pipeline_id: ok_notifier
+provenance:
+  generated_at: '2026-01-03T10:00:00Z'
+  source_file: ok_notify.txt
+  source_type: step1_json
+schedule:
+  enabled: false
+

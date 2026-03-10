@@ -1,0 +1,62 @@
+{
+  "diagnostics": {
+    "decisions": [
+      "profile=airflow@2.8",
+      "packaging=single_workflow",
+      "task_count=2"
+    ],
+    "warnings": []
+  },
+  "edges": [
+    {
+      "edge_type": "success",
+      "from": "extract",
+      "to": "load"
+    }
+  ],
+  "entry_points": [
+    "extract"
+  ],
+  "ir_version": "1.0",
+  "packaging": {
+    "strategy": "single_workflow"
+  },
+  "pipeline_id": "ok_sequential",
+  "runtime_style": "imperative",
+  "target": "airflow",
+  "target_version": "2.8",
+  "tasks": [
+    {
+      "category": "Extractor",
+      "execution_type": "http_request",
+      "id": "extract",
+      "integrations_used": [
+        "api"
+      ],
+      "name": "Extract",
+      "operator": "SimpleHttpOperator",
+      "retry": {
+        "delay_seconds": 30,
+        "max_attempts": 1,
+        "strategy": "constant"
+      },
+      "script_language": "python"
+    },
+    {
+      "category": "Loader",
+      "execution_type": "python_script",
+      "id": "load",
+      "integrations_used": [
+        "warehouse"
+      ],
+      "name": "Load",
+      "operator": "PythonOperator",
+      "retry": {
+        "delay_seconds": 30,
+        "max_attempts": 1,
+        "strategy": "constant"
+      },
+      "script_language": "python"
+    }
+  ]
+}

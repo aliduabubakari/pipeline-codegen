@@ -1,0 +1,11 @@
+id: ok_sequential
+namespace: opos.codegen
+tasks:
+- id: extract
+  type: io.kestra.plugin.core.http.Request
+  description: Extract
+- id: load
+  type: io.kestra.plugin.scripts.python.Script
+  description: Load
+  dependsOn:
+  - extract

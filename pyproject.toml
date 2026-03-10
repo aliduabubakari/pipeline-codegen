@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pipeline-codegen"
+version = "0.1.0"
+description = "OPOS to orchestrator code generation via OrchMapper"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [{name = "OPOS Contributors"}]
+dependencies = [
+  "PyYAML>=6.0.1",
+  "jsonschema>=4.22.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2.0",
+  "ruff>=0.5.0",
+  "mypy>=1.10.0",
+  "types-PyYAML>=6.0.12",
+  "types-jsonschema>=4.25.1",
+]
+
+[project.scripts]
+opos-generate = "pipeline_codegen.cli.generate:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+pipeline_codegen = [
+  "resources/schemas/*.json",
+  "resources/profiles/*/*.json",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+exclude = ["tests/_tmp_snapshot"]

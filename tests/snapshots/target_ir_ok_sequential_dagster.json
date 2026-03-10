@@ -1,0 +1,62 @@
+{
+  "diagnostics": {
+    "decisions": [
+      "profile=dagster@1.8",
+      "packaging=single_workflow",
+      "task_count=2"
+    ],
+    "warnings": []
+  },
+  "edges": [
+    {
+      "edge_type": "success",
+      "from": "extract",
+      "to": "load"
+    }
+  ],
+  "entry_points": [
+    "extract"
+  ],
+  "ir_version": "1.0",
+  "packaging": {
+    "strategy": "single_workflow"
+  },
+  "pipeline_id": "ok_sequential",
+  "runtime_style": "imperative",
+  "target": "dagster",
+  "target_version": "1.8",
+  "tasks": [
+    {
+      "category": "Extractor",
+      "execution_type": "http_request",
+      "id": "extract",
+      "integrations_used": [
+        "api"
+      ],
+      "name": "Extract",
+      "operator": "op_http",
+      "retry": {
+        "delay_seconds": 30,
+        "max_attempts": 1,
+        "strategy": "constant"
+      },
+      "script_language": "python"
+    },
+    {
+      "category": "Loader",
+      "execution_type": "python_script",
+      "id": "load",
+      "integrations_used": [
+        "warehouse"
+      ],
+      "name": "Load",
+      "operator": "op",
+      "retry": {
+        "delay_seconds": 30,
+        "max_attempts": 1,
+        "strategy": "constant"
+      },
+      "script_language": "python"
+    }
+  ]
+}

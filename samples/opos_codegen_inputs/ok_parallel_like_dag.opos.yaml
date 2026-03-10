@@ -1,0 +1,102 @@
+components:
+- category: Extractor
+  executor:
+    type: python_script
+  id: start
+  inputs: []
+  integrations_used:
+  - fs
+  name: Start
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+- category: Transformer
+  executor:
+    type: python_script
+  id: branch_a
+  inputs: []
+  integrations_used:
+  - fs
+  name: Branch A
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+- category: Transformer
+  executor:
+    type: bash
+  id: branch_b
+  inputs: []
+  integrations_used:
+  - fs
+  name: Branch B
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+- category: Loader
+  executor:
+    type: python_script
+  id: join
+  inputs: []
+  integrations_used:
+  - warehouse
+  name: Join
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+description: Fan out then join
+flow:
+  edges:
+  - edge_type: success
+    from: branch_a
+    to: join
+  - edge_type: success
+    from: branch_b
+    to: join
+  - edge_type: success
+    from: start
+    to: branch_a
+  - edge_type: success
+    from: start
+    to: branch_b
+  entry_points:
+  - start
+  pattern: dag
+integrations:
+- authentication:
+    method: none
+  id: fs
+  type: filesystem
+  used_by_components: []
+- authentication:
+    method: none
+  id: warehouse
+  type: database
+  used_by_components: []
+metadata:
+  complexity: medium
+  created: '2026-01-02'
+  domain: general
+  generator: template
+  name: ok_parallel_like_dag
+  owner: unknown
+opos_version: '1.0'
+pipeline_id: ok_parallel_like_dag
+provenance:
+  generated_at: '2026-01-02T10:00:00Z'
+  source_file: ok_dag.txt
+  source_type: step1_json
+schedule:
+  enabled: false
+

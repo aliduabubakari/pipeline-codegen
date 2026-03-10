@@ -1,0 +1,13 @@
+{
+  "checksums": {
+    "definitions.py": "bc07b21fb3e1d42675c0fc14a2914013a3004700d573b0fbd31964fcb2136788"
+  },
+  "entrypoint": "definitions.py",
+  "files": [
+    "definitions.py"
+  ],
+  "mode": "template",
+  "pipeline_id": "ok_sequential",
+  "target": "dagster",
+  "target_version": "1.8"
+}

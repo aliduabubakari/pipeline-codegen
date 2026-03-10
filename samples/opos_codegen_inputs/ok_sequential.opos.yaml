@@ -1,0 +1,65 @@
+components:
+- category: Extractor
+  executor:
+    type: http_request
+  id: extract
+  inputs: []
+  integrations_used:
+  - api
+  name: Extract
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+- category: Loader
+  executor:
+    type: python_script
+  id: load
+  inputs: []
+  integrations_used:
+  - warehouse
+  name: Load
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+description: Extract then load
+flow:
+  edges:
+  - edge_type: success
+    from: extract
+    to: load
+  entry_points:
+  - extract
+  pattern: sequential
+integrations:
+- authentication:
+    method: none
+  id: api
+  type: api
+  used_by_components: []
+- authentication:
+    method: none
+  id: warehouse
+  type: database
+  used_by_components: []
+metadata:
+  complexity: low
+  created: '2026-01-01'
+  domain: general
+  generator: template
+  name: ok_sequential
+  owner: unknown
+opos_version: '1.0'
+pipeline_id: ok_sequential
+provenance:
+  generated_at: '2026-01-01T10:00:00Z'
+  source_file: ok_seq.txt
+  source_type: step1_json
+schedule:
+  enabled: false
+
