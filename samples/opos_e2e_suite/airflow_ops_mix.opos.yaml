@@ -1,0 +1,86 @@
+components:
+- category: Extractor
+  executor:
+    type: http_request
+  id: ingest_api
+  inputs: []
+  integrations_used:
+  - partner_api
+  name: Ingest API
+  outputs: []
+  retry:
+    delay_seconds: 20
+    max_attempts: 2
+    strategy: exponential
+  upstream_policy: all_success
+- category: Transformer
+  executor:
+    type: bash
+  id: normalize_raw
+  inputs: []
+  integrations_used:
+  - compute
+  name: Normalize Raw
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+- category: Loader
+  executor:
+    type: sql
+  id: load_warehouse
+  inputs: []
+  integrations_used:
+  - warehouse
+  name: Load Warehouse
+  outputs: []
+  retry:
+    delay_seconds: 45
+    max_attempts: 2
+    strategy: constant
+  upstream_policy: all_success
+description: API ingestion to normalized warehouse load
+flow:
+  edges:
+  - edge_type: success
+    from: ingest_api
+    to: normalize_raw
+  - edge_type: success
+    from: normalize_raw
+    to: load_warehouse
+  entry_points:
+  - ingest_api
+  pattern: sequential
+integrations:
+- authentication:
+    method: token
+  id: partner_api
+  type: api
+  used_by_components: []
+- authentication:
+    method: none
+  id: compute
+  type: shell
+  used_by_components: []
+- authentication:
+    method: iam
+  id: warehouse
+  type: database
+  used_by_components: []
+metadata:
+  complexity: low
+  created: '2026-03-10'
+  domain: analytics
+  generator: curated
+  name: airflow_ops_mix
+  owner: platform
+opos_version: '1.0'
+pipeline_id: airflow_ops_mix
+provenance:
+  generated_at: '2026-03-10T08:00:00Z'
+  source_file: airflow_ops_mix.md
+  source_type: curated_suite
+schedule:
+  enabled: false

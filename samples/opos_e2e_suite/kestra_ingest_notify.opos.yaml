@@ -1,0 +1,108 @@
+components:
+- category: Extractor
+  executor:
+    type: http_request
+  id: poll_events
+  inputs: []
+  integrations_used:
+  - events_api
+  name: Poll Events
+  outputs: []
+  retry:
+    delay_seconds: 20
+    max_attempts: 3
+    strategy: exponential
+  upstream_policy: all_success
+- category: Loader
+  executor:
+    type: container
+  id: stage_payload
+  inputs: []
+  integrations_used:
+  - object_storage
+  name: Stage Payload
+  outputs: []
+  retry:
+    delay_seconds: 20
+    max_attempts: 2
+    strategy: constant
+  upstream_policy: all_success
+- category: Loader
+  executor:
+    type: sql
+  id: merge_events
+  inputs: []
+  integrations_used:
+  - warehouse
+  name: Merge Events
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 2
+    strategy: constant
+  upstream_policy: all_success
+- category: Notifier
+  executor:
+    type: email
+  id: notify_ops
+  inputs: []
+  integrations_used:
+  - smtp
+  name: Notify Ops
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+description: Event ingestion with merge and notification
+flow:
+  edges:
+  - edge_type: success
+    from: poll_events
+    to: stage_payload
+  - edge_type: success
+    from: stage_payload
+    to: merge_events
+  - edge_type: success
+    from: merge_events
+    to: notify_ops
+  entry_points:
+  - poll_events
+  pattern: sequential
+integrations:
+- authentication:
+    method: token
+  id: events_api
+  type: api
+  used_by_components: []
+- authentication:
+    method: iam
+  id: object_storage
+  type: filesystem
+  used_by_components: []
+- authentication:
+    method: iam
+  id: warehouse
+  type: database
+  used_by_components: []
+- authentication:
+    method: password
+  id: smtp
+  type: smtp
+  used_by_components: []
+metadata:
+  complexity: medium
+  created: '2026-03-10'
+  domain: operations
+  generator: curated
+  name: kestra_ingest_notify
+  owner: ops-platform
+opos_version: '1.0'
+pipeline_id: kestra_ingest_notify
+provenance:
+  generated_at: '2026-03-10T08:15:00Z'
+  source_file: kestra_ingest_notify.md
+  source_type: curated_suite
+schedule:
+  enabled: false

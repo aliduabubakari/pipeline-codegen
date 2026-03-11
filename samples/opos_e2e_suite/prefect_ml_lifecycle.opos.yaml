@@ -1,0 +1,108 @@
+components:
+- category: Transformer
+  executor:
+    type: python_script
+  id: prepare_features
+  inputs: []
+  integrations_used:
+  - feature_store
+  name: Prepare Features
+  outputs: []
+  retry:
+    delay_seconds: 20
+    max_attempts: 2
+    strategy: constant
+  upstream_policy: all_success
+- category: Transformer
+  executor:
+    type: container
+  id: train_model
+  inputs: []
+  integrations_used:
+  - model_registry
+  name: Train Model
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 2
+    strategy: exponential
+  upstream_policy: all_success
+- category: QualityCheck
+  executor:
+    type: python_script
+  id: evaluate_model
+  inputs: []
+  integrations_used:
+  - metrics_api
+  name: Evaluate Model
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+- category: Notifier
+  executor:
+    type: email
+  id: notify_release
+  inputs: []
+  integrations_used:
+  - smtp
+  name: Notify Release
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+description: Feature prep, training, evaluation, and release notification
+flow:
+  edges:
+  - edge_type: success
+    from: prepare_features
+    to: train_model
+  - edge_type: success
+    from: train_model
+    to: evaluate_model
+  - edge_type: success
+    from: evaluate_model
+    to: notify_release
+  entry_points:
+  - prepare_features
+  pattern: sequential
+integrations:
+- authentication:
+    method: iam
+  id: feature_store
+  type: database
+  used_by_components: []
+- authentication:
+    method: token
+  id: model_registry
+  type: api
+  used_by_components: []
+- authentication:
+    method: token
+  id: metrics_api
+  type: api
+  used_by_components: []
+- authentication:
+    method: password
+  id: smtp
+  type: smtp
+  used_by_components: []
+metadata:
+  complexity: medium
+  created: '2026-03-10'
+  domain: ml
+  generator: curated
+  name: prefect_ml_lifecycle
+  owner: ml-platform
+opos_version: '1.0'
+pipeline_id: prefect_ml_lifecycle
+provenance:
+  generated_at: '2026-03-10T08:05:00Z'
+  source_file: prefect_ml_lifecycle.md
+  source_type: curated_suite
+schedule:
+  enabled: false

@@ -13,6 +13,9 @@ authors = [{name = "OPOS Contributors"}]
 dependencies = [
   "PyYAML>=6.0.1",
   "jsonschema>=4.22.0",
+  "typer>=0.16.0",
+  "rich>=13.7.0",
+  "python-dotenv>=1.0.1",
 ]
 
 [project.optional-dependencies]
@@ -26,6 +29,7 @@ dev = [
 
 [project.scripts]
 opos-generate = "pipeline_codegen.cli.generate:main"
+opos-llm-client = "pipeline_codegen.llm.client:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -44,4 +48,4 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
-exclude = ["tests/_tmp_snapshot"]
+exclude = ["tests/_tmp_snapshot", "samples/generated_workflows_proof"]

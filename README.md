@@ -42,11 +42,69 @@ Supported OPOS execution types in v1:
 - Prefect and Dagster rendering preserves IR dependency edges.
 - Verifier validates manifest integrity, including SHA-256 checksums.
 
+## LLM Client Providers
+
+Built-in provider support:
+
+- `deepinfra`
+- `openrouter`
+- `ollama`
+- `openai`
+- `claude` (Anthropic)
+- `deepseek`
+- `stub` (deterministic local fallback; default in `llm-assisted` if no provider is passed)
+
+The CLI is built with **Typer** and **Rich**, so interactive runs get structured tables while `--json-report` remains machine-readable.
+
+Default API key environment variables:
+
+- `OPENAI_API_KEY`
+- `OPENROUTER_API_KEY`
+- `DEEPINFRA_API_TOKEN`
+- `DEEPSEEK_API_KEY`
+- `ANTHROPIC_API_KEY`
+
+## BYOK and `.env` Reuse
+
+Bring your own key (BYOK) is the default model:
+
+- Pass key/model directly in CLI flags (`--llm-api-key`, `--llm-model`).
+- Or set them once in `.env` and reuse.
+- Precedence is: **CLI flags > `.env`/environment > provider defaults**.
+
+Example `.env`:
+
+```dotenv
+LLM_PROVIDER=openrouter
+LLM_MODEL=openai/gpt-4o-mini
+LLM_TEMPERATURE=0.1
+LLM_MAX_TOKENS=512
+OPENROUTER_API_KEY=your_key_here
+```
+
+Quick start:
+
+```bash
+cp .env.example .env
+```
+
+Then run without repeating credentials/model:
+
+```bash
+opos-generate \
+  --input samples/opos_codegen_inputs/ok_sequential.opos.yaml \
+  --target airflow \
+  --target-version 2.8 \
+  --out-dir /tmp/opos-airflow-llm \
+  --mode llm-assisted \
+  --strict
+```
+
 ## Install
 
 ```bash
 python -m pip install --upgrade pip
-pip install -e .[dev]
+pip install -e '.[dev]'
 ```
 
 ## CLI Usage
@@ -65,8 +123,29 @@ opos-generate \
 Key flags:
 
 - `--mode template|llm-assisted` (default: `template`)
+- `--llm-provider` provider name for `llm-assisted`
+- `--llm-model` model override
+- `--llm-api-key` explicit API key override
+- `--llm-base-url` endpoint override
+- `--llm-env-file` `.env` file path (default: `.env`)
+- `--no-llm-env` disable `.env` loading
 - `--strict` to fail unsupported mapping instead of warning/fallback
 - `--json-report` to emit machine-readable mapping/generation/verification report
+
+Example with remote provider:
+
+```bash
+export OPENAI_API_KEY="..."
+opos-generate \
+  --input samples/opos_codegen_inputs/ok_sequential.opos.yaml \
+  --target airflow \
+  --target-version 2.8 \
+  --out-dir /tmp/opos-airflow-llm \
+  --mode llm-assisted \
+  --llm-provider openai \
+  --llm-model gpt-4o-mini \
+  --strict
+```
 
 Exit codes:
 
@@ -98,6 +177,17 @@ Run unit/integration tests:
 
 ```bash
 pytest -q
+```
+
+Curated suite inputs and generated proof artifacts:
+
+- Inputs: `samples/opos_e2e_suite/`
+- Generated proofs: `samples/generated_workflows_proof/`
+
+Regenerate the full proof matrix (4 samples x 4 targets x 2 modes):
+
+```bash
+python scripts/generate_suite_proofs.py
 ```
 
 Run a full CLI matrix for 3 fixtures x 4 targets x 2 modes:
@@ -137,5 +227,6 @@ Expected outcome: all runs return `0`, create entrypoint + `artifacts.json`, and
 - `MAP001 unsupported target profile`: verify `--target` and `--target-version` pair.
 - `MAP005 unsupported execution type`: switch to supported v1 executor types or run non-strict mode.
 - `GEN005 cyclic dependencies detected in target ir`: remove cycles from OPOS flow edges.
+- `GEN006 llm request failed/misconfigured`: verify `--llm-provider`, model, API key/env var, and connectivity.
 - `VFY010 checksum mismatch`: artifact changed after manifest generation; regenerate artifacts.
-- `ModuleNotFoundError: pipeline_codegen` in local tests: use `pip install -e .[dev]`.
+- `ModuleNotFoundError: pipeline_codegen` in local tests: use `pip install -e '.[dev]'`.

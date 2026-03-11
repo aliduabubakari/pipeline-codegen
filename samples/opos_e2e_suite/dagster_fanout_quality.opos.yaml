@@ -1,0 +1,128 @@
+components:
+- category: Extractor
+  executor:
+    type: python_script
+  id: extract_source
+  inputs: []
+  integrations_used:
+  - data_lake
+  name: Extract Source
+  outputs: []
+  retry:
+    delay_seconds: 20
+    max_attempts: 2
+    strategy: constant
+  upstream_policy: all_success
+- category: Transformer
+  executor:
+    type: python_script
+  id: enrich_region_a
+  inputs: []
+  integrations_used:
+  - geo_api
+  name: Enrich Region A
+  outputs: []
+  retry:
+    delay_seconds: 25
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+- category: Transformer
+  executor:
+    type: container
+  id: enrich_region_b
+  inputs: []
+  integrations_used:
+  - geo_api
+  name: Enrich Region B
+  outputs: []
+  retry:
+    delay_seconds: 25
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+- category: QualityCheck
+  executor:
+    type: bash
+  id: quality_gate
+  inputs: []
+  integrations_used:
+  - compute
+  name: Quality Gate
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 1
+    strategy: constant
+  upstream_policy: all_success
+- category: Loader
+  executor:
+    type: sql
+  id: publish_curated
+  inputs: []
+  integrations_used:
+  - warehouse
+  name: Publish Curated
+  outputs: []
+  retry:
+    delay_seconds: 30
+    max_attempts: 2
+    strategy: constant
+  upstream_policy: all_success
+description: Fan-out enrichment with a joined quality gate and publish
+flow:
+  edges:
+  - edge_type: success
+    from: extract_source
+    to: enrich_region_a
+  - edge_type: success
+    from: extract_source
+    to: enrich_region_b
+  - edge_type: success
+    from: enrich_region_a
+    to: quality_gate
+  - edge_type: success
+    from: enrich_region_b
+    to: quality_gate
+  - edge_type: success
+    from: quality_gate
+    to: publish_curated
+  entry_points:
+  - extract_source
+  pattern: dag
+integrations:
+- authentication:
+    method: iam
+  id: data_lake
+  type: filesystem
+  used_by_components: []
+- authentication:
+    method: token
+  id: geo_api
+  type: api
+  used_by_components: []
+- authentication:
+    method: none
+  id: compute
+  type: shell
+  used_by_components: []
+- authentication:
+    method: iam
+  id: warehouse
+  type: database
+  used_by_components: []
+metadata:
+  complexity: high
+  created: '2026-03-10'
+  domain: analytics
+  generator: curated
+  name: dagster_fanout_quality
+  owner: data-platform
+opos_version: '1.0'
+pipeline_id: dagster_fanout_quality
+provenance:
+  generated_at: '2026-03-10T08:10:00Z'
+  source_file: dagster_fanout_quality.md
+  source_type: curated_suite
+schedule:
+  enabled: false
