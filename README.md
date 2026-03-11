@@ -71,6 +71,7 @@ Bring your own key (BYOK) is the default model:
 - Pass key/model directly in CLI flags (`--llm-api-key`, `--llm-model`).
 - Or set them once in `.env` and reuse.
 - Precedence is: **CLI flags > `.env`/environment > provider defaults**.
+- Exa is **not BYOK** in client mode; Exa access is hosted in the KB service backend.
 
 Example `.env`:
 
@@ -129,6 +130,10 @@ Key flags:
 - `--llm-base-url` endpoint override
 - `--llm-env-file` `.env` file path (default: `.env`)
 - `--no-llm-env` disable `.env` loading
+- `--kb-service-url` hosted KB service URL
+- `--kb-service-token` hosted KB service bearer token
+- `--kb-timeout-seconds` hosted KB service timeout
+- `--no-kb-remote` disable remote KB lookup
 - `--strict` to fail unsupported mapping instead of warning/fallback
 - `--json-report` to emit machine-readable mapping/generation/verification report
 
@@ -144,8 +149,38 @@ opos-generate \
   --mode llm-assisted \
   --llm-provider openai \
   --llm-model gpt-4o-mini \
+  --kb-service-url http://localhost:8787 \
+  --kb-service-token dev-token \
   --strict
 ```
+
+## Hosted KB Service
+
+The hosted KB service provides orchestrator-version knowledge packs and owns `EXA_API_KEY` server-side.
+
+- API endpoints:
+  - `GET /v1/kb/{target}/{version}`
+  - `POST /v1/version/resolve`
+  - `POST /v1/kb/backfill`
+  - `GET /v1/kb/backfill/{job_id}`
+- Auth: `Authorization: Bearer <KB_SERVICE_TOKEN>`
+
+Local run:
+
+```bash
+export KB_SERVICE_TOKEN=dev-token
+export EXA_API_KEY=YOUR_BACKEND_KEY
+opos-kb-service
+```
+
+Lifecycle:
+
+1. CLI requests exact version pack.
+2. On miss, CLI resolves nearest profile and generates immediately.
+3. CLI triggers async backfill job for requested version.
+4. After validation/promotion, future runs use exact version context.
+
+Operational details: [kb-service-runbook](/Users/abubakarialidu/pipeline-codegen/docs/kb-service-runbook.md)
 
 Exit codes:
 

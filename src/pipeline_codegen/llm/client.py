@@ -197,10 +197,18 @@ def generate_python_task_body(task: dict[str, Any], llm_config: dict[str, Any] |
         "You generate Python task internals for orchestration tasks. "
         "Return Python statements only. Do not include markdown fences or function definitions."
     )
+    context_blob = cfg.get("orchestrator_context")
+    context_text = ""
+    if isinstance(context_blob, str) and context_blob.strip():
+        context_text = context_blob.strip()
+    elif isinstance(context_blob, dict):
+        context_text = json.dumps(context_blob, sort_keys=True)
     user_prompt = (
         "Generate safe minimal Python statements for this task. Keep it deterministic and side-effect light.\n"
         f"task_json={json.dumps(task, sort_keys=True)}"
     )
+    if context_text:
+        user_prompt = f"{user_prompt}\norchestrator_context={context_text}"
     response = complete_chat(system_prompt=system_prompt, user_prompt=user_prompt, llm_config=cfg)
     code = _strip_code_fences(response)
     if not code:
