@@ -16,6 +16,9 @@ dependencies = [
   "typer>=0.16.0",
   "rich>=13.7.0",
   "python-dotenv>=1.0.1",
+  "fastapi>=0.115.0",
+  "uvicorn>=0.30.0",
+  "exa-py>=1.8.8",
 ]
 
 [project.optional-dependencies]
@@ -30,6 +33,7 @@ dev = [
 [project.scripts]
 opos-generate = "pipeline_codegen.cli.generate:main"
 opos-llm-client = "pipeline_codegen.llm.client:main"
+opos-kb-service = "pipeline_codegen.kb_service.app:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
