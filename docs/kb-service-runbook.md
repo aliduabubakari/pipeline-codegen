@@ -20,8 +20,20 @@ opos-kb-service
 Service defaults:
 
 - URL: `http://localhost:8787`
-- Object store: `/tmp/pipeline_codegen_kb/object_store`
-- Metadata DB: `/tmp/pipeline_codegen_kb/metadata.db`
+- Object store:
+  - macOS: `~/Library/Application Support/pipeline-codegen/kb_service/object_store`
+  - Linux: `~/.local/share/pipeline-codegen/kb_service/object_store`
+  - Windows: `%APPDATA%\pipeline-codegen\kb_service\object_store`
+- Metadata DB:
+  - macOS: `~/Library/Application Support/pipeline-codegen/kb_service/metadata.db`
+  - Linux: `~/.local/share/pipeline-codegen/kb_service/metadata.db`
+  - Windows: `%APPDATA%\pipeline-codegen\kb_service\metadata.db`
+
+Optional overrides:
+
+- `KB_OBJECT_STORE_DIR` explicit object store path
+- `KB_SQLITE_PATH` explicit SQLite DB path
+- `PIPELINE_CODEGEN_DATA_DIR` shared root path when explicit paths are unset
 
 ## API Summary
 

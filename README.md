@@ -173,6 +173,14 @@ export EXA_API_KEY=YOUR_BACKEND_KEY
 opos-kb-service
 ```
 
+Storage defaults are persistent (not tmp):
+
+- macOS: `~/Library/Application Support/pipeline-codegen/kb_service`
+- Linux: `~/.local/share/pipeline-codegen/kb_service`
+- Windows: `%APPDATA%\\pipeline-codegen\\kb_service`
+
+You can override with `KB_OBJECT_STORE_DIR`, `KB_SQLITE_PATH`, or `PIPELINE_CODEGEN_DATA_DIR`.
+
 Lifecycle:
 
 1. CLI requests exact version pack.
