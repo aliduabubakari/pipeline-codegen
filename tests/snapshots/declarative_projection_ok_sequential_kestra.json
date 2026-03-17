@@ -1,0 +1,42 @@
+{
+  "labels": {
+    "generatedBy": "pipeline-codegen",
+    "targetFamily": "declarative"
+  },
+  "namespace": "opos.codegen",
+  "pipeline_id": "ok_sequential",
+  "target": "kestra",
+  "tasks": [
+    {
+      "config": {
+        "method": "GET",
+        "uri": "https://example.invalid/api/ok_sequential/extract"
+      },
+      "depends_on": [],
+      "description": "Extract",
+      "id": "extract",
+      "retry": {
+        "interval": "PT30S",
+        "maxAttempts": 1,
+        "type": "constant"
+      },
+      "type": "io.kestra.plugin.core.http.Request"
+    },
+    {
+      "config": {
+        "script": "print('pipeline=ok_sequential')\nprint('task=load')"
+      },
+      "depends_on": [
+        "extract"
+      ],
+      "description": "Load",
+      "id": "load",
+      "retry": {
+        "interval": "PT30S",
+        "maxAttempts": 1,
+        "type": "constant"
+      },
+      "type": "io.kestra.plugin.scripts.python.Script"
+    }
+  ]
+}

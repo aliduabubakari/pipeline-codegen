@@ -10,9 +10,6 @@ from pipeline_codegen.core.target_ir import validate_target_ir
 from pipeline_codegen.errors import MappingError
 from pipeline_codegen.types import MappingReport, TargetIR
 
-SUPPORTED_EXEC_TYPES = {"python_script", "bash", "container", "http_request", "sql", "email"}
-
-
 def map_to_target_ir(
     opos_doc: dict[str, Any], target: str, target_version: str, config: dict[str, Any] | None = None
 ) -> TargetIR:
@@ -20,11 +17,16 @@ def map_to_target_ir(
     strict = bool(cfg.get("strict", False))
     packaging_strategy = str(cfg.get("packaging_strategy", "single_workflow"))
 
-    if packaging_strategy not in {"single_workflow", "split_workflows"}:
-        raise MappingError("MAP003", "invalid packaging strategy", "$.config.packaging_strategy")
+    if packaging_strategy != "single_workflow":
+        raise MappingError(
+            "MAP003",
+            "unsupported packaging strategy in v1: only single_workflow is implemented",
+            "$.config.packaging_strategy",
+        )
 
     adapter = get_adapter(target)
     profile = load_profile(target, target_version)
+    supported_exec_types = set(profile.get("supported_execution_types") or [])
 
     components = opos_doc.get("components") or []
     if not components:
@@ -35,7 +37,7 @@ def map_to_target_ir(
 
     for idx, comp in enumerate(components):
         exec_type = (comp.get("executor") or {}).get("type")
-        if exec_type not in SUPPORTED_EXEC_TYPES:
+        if exec_type not in supported_exec_types:
             msg = f"unsupported execution type in v1: {exec_type}"
             if strict:
                 raise MappingError("MAP005", msg, f"$.components[{idx}].executor.type")
@@ -89,6 +91,7 @@ def map_to_target_ir(
             "warnings": warnings,
             "decisions": [
                 f"profile={target}@{target_version}",
+                f"target_family={profile.get('target_family', adapter.target_family)}",
                 f"packaging={packaging_strategy}",
                 f"task_count={len(tasks)}",
             ],

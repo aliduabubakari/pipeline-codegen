@@ -7,7 +7,12 @@ from pipeline_codegen.io import load_document
 from helpers import ROOT
 
 TARGETS = [("airflow", "2.8"), ("prefect", "3.x"), ("dagster", "1.8"), ("kestra", "0.18")]
-MODES = ["template", "llm-assisted"]
+TARGET_MODES = {
+    "airflow": ["template", "llm-assisted"],
+    "prefect": ["template", "llm-assisted"],
+    "dagster": ["template", "llm-assisted"],
+    "kestra": ["template"],
+}
 ENTRYPOINTS = {
     "airflow": "pipeline.py",
     "prefect": "flow.py",
@@ -25,7 +30,7 @@ def test_curated_opos_suite_generates_for_all_targets_and_modes(tmp_path: Path) 
         opos = load_document(sample)
         sample_name = sample.name.replace(".opos.yaml", "")
         for target, version in TARGETS:
-            for mode in MODES:
+            for mode in TARGET_MODES[target]:
                 ir = map_to_target_ir(opos, target=target, target_version=version, config={"strict": True})
                 out_dir = tmp_path / sample_name / target / mode
                 llm_config = {"provider": "stub"} if mode == "llm-assisted" else None

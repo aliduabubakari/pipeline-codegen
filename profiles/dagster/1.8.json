@@ -1,6 +1,7 @@
 {
   "target": "dagster",
   "version": "1.8",
+  "target_family": "imperative",
   "runtime_style": "imperative",
   "output": {"type": "python", "entrypoint": "definitions.py"},
   "operator_mapping": {

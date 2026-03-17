@@ -15,6 +15,7 @@ def test_profile_loader_uses_packaged_resources(monkeypatch) -> None:
     profile = profiles.load_profile("airflow", "2.8")
     assert profile["target"] == "airflow"
     assert profile["version"] == "2.8"
+    assert profile["target_family"] == "imperative"
 
 
 def test_schema_loader_uses_packaged_resources(monkeypatch) -> None:

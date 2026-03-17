@@ -27,7 +27,7 @@
       "additionalProperties": false,
       "required": ["strategy"],
       "properties": {
-        "strategy": {"type": "string", "enum": ["single_workflow", "split_workflows"]}
+        "strategy": {"type": "string", "enum": ["single_workflow"]}
       }
     },
     "tasks": {

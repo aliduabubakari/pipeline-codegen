@@ -2,6 +2,7 @@
   "diagnostics": {
     "decisions": [
       "profile=kestra@0.18",
+      "target_family=declarative",
       "packaging=single_workflow",
       "task_count=2"
     ],

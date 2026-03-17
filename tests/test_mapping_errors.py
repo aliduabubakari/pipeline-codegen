@@ -19,3 +19,15 @@ def test_mapping_error_for_unsupported_exec_type_in_strict() -> None:
     with pytest.raises(ValueError) as exc:
         map_to_target_ir(opos, target="airflow", target_version="2.8", config={"strict": True})
     assert "MAP005" in str(exc.value)
+
+
+def test_mapping_error_for_unsupported_packaging_strategy() -> None:
+    opos = load_opos_fixture("ok_sequential.opos.yaml")
+    with pytest.raises(ValueError) as exc:
+        map_to_target_ir(
+            opos,
+            target="airflow",
+            target_version="2.8",
+            config={"strict": True, "packaging_strategy": "split_workflows"},
+        )
+    assert "MAP003" in str(exc.value)

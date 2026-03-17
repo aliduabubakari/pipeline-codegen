@@ -1,6 +1,7 @@
 {
   "target": "airflow",
   "version": "2.8",
+  "target_family": "imperative",
   "runtime_style": "imperative",
   "output": {"type": "python", "entrypoint": "pipeline.py"},
   "operator_mapping": {

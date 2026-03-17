@@ -6,6 +6,12 @@ from pipeline_codegen.api import generate_artifacts, map_to_target_ir, verify_ar
 from helpers import load_opos_fixture
 
 TARGETS = [("airflow", "2.8"), ("prefect", "3.x"), ("dagster", "1.8"), ("kestra", "0.18")]
+TARGET_MODES = {
+    "airflow": ["template", "llm-assisted"],
+    "prefect": ["template", "llm-assisted"],
+    "dagster": ["template", "llm-assisted"],
+    "kestra": ["template"],
+}
 FIXTURES = [
     "ok_sequential.opos.yaml",
     "ok_parallel_like_dag.opos.yaml",
@@ -17,7 +23,6 @@ ENTRYPOINTS = {
     "dagster": "definitions.py",
     "kestra": "flow.yaml",
 }
-MODES = ["template", "llm-assisted"]
 
 
 def test_e2e_conformance_counts_and_edges() -> None:
@@ -39,7 +44,7 @@ def test_e2e_conformance_generation_and_verification(tmp_path: Path) -> None:
     for fixture in FIXTURES:
         opos = load_opos_fixture(fixture)
         for target, version in TARGETS:
-            for mode in MODES:
+            for mode in TARGET_MODES[target]:
                 ir = map_to_target_ir(opos, target=target, target_version=version, config={"strict": True})
                 out_dir = tmp_path / fixture / target / mode
                 bundle = generate_artifacts(

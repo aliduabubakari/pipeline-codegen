@@ -9,9 +9,9 @@ import re
 from pathlib import Path
 from typing import Any
 
-import yaml
-
+from pipeline_codegen.core.profiles import load_profile
 from pipeline_codegen.errors import GenerationError
+from pipeline_codegen.generation.declarative import project_workflow, render_workflow
 from pipeline_codegen.llm.client import generate_python_task_body
 from pipeline_codegen.types import ArtifactBundle, TargetIR
 
@@ -224,28 +224,6 @@ def _render_dagster(
     return "\n".join(lines)
 
 
-def _render_kestra(ir: dict[str, Any], upstreams: dict[str, list[str]]) -> str:
-    tasks = []
-    for t in ir["tasks"]:
-        task_id = str(t["id"])
-        task = {
-            "id": task_id,
-            "type": t["operator"],
-            "description": t["name"],
-        }
-        deps = upstreams[task_id]
-        if deps:
-            task["dependsOn"] = deps
-        tasks.append(task)
-
-    doc = {
-        "id": ir["pipeline_id"],
-        "namespace": "opos.codegen",
-        "tasks": tasks,
-    }
-    return yaml.safe_dump(doc, sort_keys=False, allow_unicode=False)
-
-
 def _sha256(content: str) -> str:
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
@@ -257,13 +235,21 @@ def generate_artifacts(
     _, symbol_by_id, upstreams, order = _graph_view(ir)
     target = ir["target"]
     target_version = ir["target_version"]
+    profile = load_profile(target, target_version)
+    target_family = str(profile.get("target_family", "imperative"))
     p = Path(out_dir)
     p.mkdir(parents=True, exist_ok=True)
 
     if mode not in {"template", "llm-assisted"}:
         raise GenerationError("GEN001", f"unsupported generation mode: {mode}")
 
-    if target == "airflow":
+    if target_family == "declarative":
+        if mode != "template":
+            raise GenerationError("GEN007", "llm-assisted mode is only supported for imperative targets in v1")
+        spec = project_workflow(ir, profile=profile, upstreams=upstreams)
+        entrypoint = str(profile.get("output", {}).get("entrypoint", "flow.yaml"))
+        content = render_workflow(spec)
+    elif target == "airflow":
         entrypoint = "pipeline.py"
         content = _render_airflow(ir, mode, llm_config, symbol_by_id=symbol_by_id)
     elif target == "prefect":
@@ -286,9 +272,6 @@ def generate_artifacts(
             upstreams=upstreams,
             order=order,
         )
-    elif target == "kestra":
-        entrypoint = "flow.yaml"
-        content = _render_kestra(ir, upstreams=upstreams)
     else:
         raise GenerationError("GEN002", f"unsupported generation target in v1: {target}")
 

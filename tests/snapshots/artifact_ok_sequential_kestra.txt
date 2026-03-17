@@ -1,11 +1,27 @@
 id: ok_sequential
 namespace: opos.codegen
+labels:
+  generatedBy: pipeline-codegen
+  targetFamily: declarative
 tasks:
 - id: extract
   type: io.kestra.plugin.core.http.Request
   description: Extract
+  method: GET
+  uri: https://example.invalid/api/ok_sequential/extract
+  retry:
+    type: constant
+    maxAttempts: 1
+    interval: PT30S
 - id: load
   type: io.kestra.plugin.scripts.python.Script
   description: Load
+  script: 'print(''pipeline=ok_sequential'')
+
+    print(''task=load'')'
   dependsOn:
   - extract
+  retry:
+    type: constant
+    maxAttempts: 1
+    interval: PT30S

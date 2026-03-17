@@ -1,6 +1,7 @@
 {
   "target": "prefect",
   "version": "3.x",
+  "target_family": "imperative",
   "runtime_style": "imperative",
   "output": {"type": "python", "entrypoint": "flow.py"},
   "operator_mapping": {

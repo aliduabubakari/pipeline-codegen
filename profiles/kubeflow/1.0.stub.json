@@ -1,6 +1,7 @@
 {
   "target": "kubeflow",
   "version": "1.0.stub",
+  "target_family": "declarative",
   "status": "deferred_v1_1",
   "notes": "Interface stub only in v1"
 }

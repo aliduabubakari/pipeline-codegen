@@ -14,7 +14,12 @@ ROOT = Path(__file__).resolve().parents[1]
 SAMPLES_DIR = ROOT / "samples" / "opos_e2e_suite"
 PROOF_DIR = ROOT / "samples" / "generated_workflows_proof"
 TARGETS = [("airflow", "2.8"), ("prefect", "3.x"), ("dagster", "1.8"), ("kestra", "0.18")]
-MODES = ["template", "llm-assisted"]
+TARGET_MODES = {
+    "airflow": ["template", "llm-assisted"],
+    "prefect": ["template", "llm-assisted"],
+    "dagster": ["template", "llm-assisted"],
+    "kestra": ["template"],
+}
 
 
 def main() -> int:
@@ -33,7 +38,8 @@ def main() -> int:
                 "This directory contains generated artifacts for `samples/opos_e2e_suite`.",
                 "Matrix:",
                 "- targets: airflow@2.8, prefect@3.x, dagster@1.8, kestra@0.18",
-                "- modes: template, llm-assisted (stub provider)",
+                "- imperative modes: template, llm-assisted (stub provider)",
+                "- declarative modes: template",
                 "",
                 "Verification details are captured in `verification_summary.json`.",
                 "",
@@ -53,7 +59,7 @@ def main() -> int:
         sample_name = sample.name.replace(".opos.yaml", "")
         opos = load_document(sample)
         for target, version in TARGETS:
-            for mode in MODES:
+            for mode in TARGET_MODES[target]:
                 ir = map_to_target_ir(opos, target=target, target_version=version, config={"strict": True})
                 out_dir = PROOF_DIR / sample_name / target / mode
                 llm_config = {"provider": "stub"} if mode == "llm-assisted" else None

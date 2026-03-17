@@ -8,12 +8,14 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class AdapterCapability:
     target: str
+    target_family: str
     runtime_style: str
     supported_execution_types: tuple[str, ...]
 
 
 class BaseAdapter:
     target: str
+    target_family: str
     runtime_style: str
 
     def map_operator(self, execution_type: str, profile: dict) -> str:
@@ -25,6 +27,7 @@ class BaseAdapter:
     def capability(self, profile: dict) -> AdapterCapability:
         return AdapterCapability(
             target=self.target,
+            target_family=self.target_family,
             runtime_style=self.runtime_style,
             supported_execution_types=tuple(profile.get("supported_execution_types", [])),
         )

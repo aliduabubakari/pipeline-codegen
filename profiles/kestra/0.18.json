@@ -1,6 +1,7 @@
 {
   "target": "kestra",
   "version": "0.18",
+  "target_family": "declarative",
   "runtime_style": "declarative",
   "output": {"type": "yaml", "entrypoint": "flow.yaml"},
   "operator_mapping": {

@@ -2,6 +2,7 @@
   "diagnostics": {
     "decisions": [
       "profile=airflow@2.8",
+      "target_family=imperative",
       "packaging=single_workflow",
       "task_count=2"
     ],

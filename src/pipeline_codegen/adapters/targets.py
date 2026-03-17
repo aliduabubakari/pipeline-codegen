@@ -8,31 +8,37 @@ from pipeline_codegen.errors import MappingError
 
 class AirflowAdapter(BaseAdapter):
     target = "airflow"
+    target_family = "imperative"
     runtime_style = "imperative"
 
 
 class PrefectAdapter(BaseAdapter):
     target = "prefect"
+    target_family = "imperative"
     runtime_style = "imperative"
 
 
 class DagsterAdapter(BaseAdapter):
     target = "dagster"
+    target_family = "imperative"
     runtime_style = "imperative"
 
 
 class KestraAdapter(BaseAdapter):
     target = "kestra"
+    target_family = "declarative"
     runtime_style = "declarative"
 
 
 class KubeflowStubAdapter(BaseAdapter):
     target = "kubeflow"
+    target_family = "declarative"
     runtime_style = "declarative"
 
 
 class KubernetesStubAdapter(BaseAdapter):
     target = "kubernetes"
+    target_family = "declarative"
     runtime_style = "declarative"
 
 
